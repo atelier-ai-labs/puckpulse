@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { PAGES, SITEMAP_PATHS, TEAMS, sitemapXml, titleFor } from "./site.js";
+import { PAGES, SITEMAP_PATHS, TEAMS, canonicalFor, sitemapXml, titleFor } from "./site.js";
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 
@@ -51,5 +51,23 @@ describe("site-wide preview", () => {
     const meta = html.match(/<meta[^>]+>/g).filter((t) => /description|og:|twitter:/.test(t)).join("\n");
     expect(meta).toContain("AI hockey analyst");
     expect(meta).not.toMatch(/bet|lines|fair odds|gambl/i);
+  });
+});
+
+describe("canonicalFor", () => {
+  it("gives one clean puckpulse.io URL per page", () => {
+    expect(canonicalFor("/")).toBe("https://puckpulse.io/");
+    expect(canonicalFor("/standings/")).toBe("https://puckpulse.io/standings");
+    expect(canonicalFor("/Standings")).toBe("https://puckpulse.io/standings");
+    expect(canonicalFor("/teams/bos")).toBe("https://puckpulse.io/teams/BOS");
+    expect(canonicalFor("/teams/XYZ")).toBe("https://puckpulse.io/");
+    expect(canonicalFor("/games/2026020150")).toBe("https://puckpulse.io/games/2026020150");
+    expect(canonicalFor("/players/8478402")).toBe("https://puckpulse.io/players/8478402");
+  });
+
+  it("matches every sitemap URL exactly, so the two never disagree", () => {
+    for (const path of SITEMAP_PATHS) {
+      expect(canonicalFor(path)).toBe(`https://puckpulse.io${path}`);
+    }
   });
 });

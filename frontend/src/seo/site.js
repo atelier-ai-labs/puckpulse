@@ -1,5 +1,5 @@
 // The site's public routes and teams, in one place: the sitemap
-// (public/sitemap.xml, checked by site.test.js), page titles (usePageTitle),
+// (public/sitemap.xml, checked by site.test.js), page titles and canonical URLs (usePageTitle),
 // and the /t/{abbrev} share links all read from here.
 
 export const SITE = "https://puckpulse.io";
@@ -49,6 +49,21 @@ export function titleFor(pathname) {
   if (/^\/players\/\d+$/.test(path)) return `Player | ${BRAND}`;
   const page = PAGES.find((p) => p.path === path);
   return page && page.title ? `${page.title} | ${BRAND}` : DEFAULT_TITLE;
+}
+
+// The one URL search engines should index for a path: always https://puckpulse.io
+// (never www), no ?query or #hash, no trailing slash, team codes upper-cased.
+// Without it, Google sees /teams/bos, /teams/BOS?x=1 and www.puckpulse.io/teams/BOS
+// as duplicates and picks one on its own ("Duplicate without user-selected canonical").
+export function canonicalFor(pathname) {
+  const path = pathname.replace(/\/+$/, "") || "/";
+  const team = path.match(/^\/teams\/([A-Za-z]{3})$/i);
+  if (team) {
+    const code = team[1].toUpperCase();
+    return TEAMS[code] ? `${SITE}/teams/${code}` : `${SITE}/`;
+  }
+  const page = PAGES.find((p) => p.path === path.toLowerCase());
+  return `${SITE}${page ? page.path : path}`;
 }
 
 export function sitemapXml(paths = SITEMAP_PATHS) {
