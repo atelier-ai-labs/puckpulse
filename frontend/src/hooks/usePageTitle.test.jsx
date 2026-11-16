@@ -18,4 +18,19 @@ describe("usePageTitle", () => {
     render(<MemoryRouter initialEntries={["/playoffs"]}><Probe /></MemoryRouter>);
     expect(document.title).toBe("NHL Playoff Odds | PuckPulse");
   });
+
+  it("points the canonical tag at the clean puckpulse.io URL", () => {
+    render(<MemoryRouter initialEntries={["/teams/pit/?ref=x"]}><Probe /></MemoryRouter>);
+    const links = document.head.querySelectorAll('link[rel="canonical"]');
+    expect(links).toHaveLength(1);
+    expect(links[0].href).toBe("https://puckpulse.io/teams/PIT");
+  });
+
+  it("updates the one canonical tag on navigation instead of adding another", () => {
+    render(<MemoryRouter initialEntries={["/standings"]}><Probe /></MemoryRouter>);
+    render(<MemoryRouter initialEntries={["/news"]}><Probe /></MemoryRouter>);
+    const links = document.head.querySelectorAll('link[rel="canonical"]');
+    expect(links).toHaveLength(1);
+    expect(links[0].href).toBe("https://puckpulse.io/news");
+  });
 });

@@ -230,6 +230,43 @@ Ready-to-use lines, grouped by theme. Details for each are in the entries below.
 
 ---
 
+## 2026-11-15 — Telling Google which URL is the real one
+
+**What happened.** Google Search Console emailed: some pages weren't indexed because of
+"Duplicate without user-selected canonical." Google had found pages that looked the same and
+had to guess which one to list in search. Three things made pages look like copies:
+`www.puckpulse.io` and `puckpulse.io` both serve the whole site; the same page can be reached
+with extras like `?team=TOR`, a trailing slash, or `/teams/bos` in lower case; and every URL
+first returns the same `index.html` shell, because PuckPulse is a single-page app that fills
+the page in with JavaScript.
+
+**The fix.** A canonical tag, `<link rel="canonical" href="...">`, is the site saying "this
+is the real address of this page." The hook that already set each page's title now also sets
+that tag. A new `canonicalFor()` builds the clean URL: always `https://puckpulse.io`, no query
+or trailing slash, team codes in upper case. A test checks that every sitemap URL is its own
+canonical, so the sitemap and the tags can never point Google two ways.
+
+**Following one request.** Googlebot fetches `www.puckpulse.io/teams/bos?ref=x`. It gets the
+shell, runs the JavaScript, and React Router renders the Bruins page. The hook adds
+`<link rel="canonical" href="https://puckpulse.io/teams/BOS">`. Google folds this URL into
+that one and lists only `puckpulse.io/teams/BOS`.
+
+**Alternatives I skipped.**
+- *Redirect www to the bare domain.* That's the textbook fix, but Azure Static Web Apps (free
+  tier) can't redirect by hostname in its config. A JavaScript redirect would also wipe what
+  www visitors saved in their browser (favorite team, pick'em picks, alerts), since browsers
+  keep that per address. The canonical tag tells Google the same thing without moving anyone.
+- *Pre-render real HTML for each page at build time.* Better for search, but a large change.
+  Google runs JavaScript, so the tag set by JavaScript is enough for now.
+
+**Interview line.** "Search Console flagged duplicate pages on my single-page app: www and
+non-www, plus query-string variants, all served the same shell. I added a canonical URL per
+route, built from the same route list that generates the sitemap, with a test that the two
+always agree."
+- *Follow-up: "Does Google even see a tag added by JavaScript?"* Yes. Google renders the page
+  before indexing it. The catch is not to ship a different canonical in the raw HTML, because
+  then Google sees two answers. index.html has none, so the JavaScript one is the only one.
+
 ## 2026-11-13 — Retry right away, not at the end
 
 **What happened.** At 06:00 UTC the NHL's API stopped answering for about a minute.
