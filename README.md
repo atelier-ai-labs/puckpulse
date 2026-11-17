@@ -143,7 +143,7 @@ for sure.
 - **Notifier** (`backend/notifier_function/`, Azure Functions): sends goal and final alerts every
   minute during games, and saves the closing odds about 15 minutes before puck drop.
 - **Database:** Postgres on Neon.
-- **Cost:** about $12–13 a month, mostly the API's always-on replica. Free tiers cover the rest.
+- **Cost:** about $15 a month on Azure, mostly the API's always-on replica. Free tiers cover the rest.
 
 ## The nightly data job
 
