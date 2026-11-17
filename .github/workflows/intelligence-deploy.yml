@@ -32,7 +32,7 @@ concurrency:
 
 env:
   RESOURCE_GROUP: nhl-dashboard-rg
-  IMAGE: ghcr.io/nmagera07/nhl-intelligence
+  IMAGE: ghcr.io/atelier-ai-labs/nhl-intelligence
   CONTAINER_APP: nhl-intelligence
   HEALTH_URL: https://nhl-intelligence.bravecoast-a5240643.westus2.azurecontainerapps.io/health
 
