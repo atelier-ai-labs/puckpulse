@@ -36,7 +36,7 @@ concurrency:
 
 env:
   RESOURCE_GROUP: nhl-dashboard-rg
-  IMAGE: ghcr.io/nmagera07/nhl-dashboard-api
+  IMAGE: ghcr.io/atelier-ai-labs/nhl-dashboard-api
   CONTAINER_APP: nhl-dashboard-api
   INGESTION_JOB: nhl-standings-ingest
   NOTIFIER_JOB: nhl-live-notifier

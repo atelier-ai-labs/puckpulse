@@ -104,7 +104,7 @@ Answers report which provider responded (`model` in the response).
 Deployed to the `nhl-intelligence` Azure Container App (same environment as
 the dashboard API; scales 0-1) by `.github/workflows/intelligence-deploy.yml`
 on every push to `main` that touches `intelligence/`: tests, build and push
-`ghcr.io/nmagera07/nhl-intelligence:<sha>`, update the app, then verify the
+`ghcr.io/atelier-ai-labs/nhl-intelligence:<sha>`, update the app, then verify the
 new revision is healthy and `GET /health` reports that commit.
 
 Provider keys are Container App secrets, set once and never in CI or git:
