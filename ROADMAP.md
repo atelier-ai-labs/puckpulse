@@ -1,149 +1,226 @@
 # PuckPulse roadmap
 
-What I want to build next, roughly in order. Atelier HQ reads this file to suggest what to work
-on each day, so every item uses the same fields.
+**Last reviewed:** 2026-11-20. This file follows the Atelier AI Labs roadmap standard (v1.0). Atelier HQ reads
+it to suggest what to work on, so every item uses the same fields.
 
-**Last reviewed:** 2026-11-17
+## Vision
 
-**Where PuckPulse is headed:** the place NHL bettors check before they bet. Fair odds next to
-the best price, everything that moves a line, and an honest track record against the closing
-line. The fan side (scores, standings, alerts, pick'em) stays the base, and the site stays
-uncluttered. Right now the goal is growing the user base, not making money. PuckPulse is also
-my main portfolio piece for applied-AI engineering jobs, so AI work that teaches me something
-counts double.
+PuckPulse should be the place NHL bettors check before they bet: fair odds next to the best price, everything
+that moves a line, and an honest track record against the closing line. The fan side (scores, standings,
+alerts, pick'em) stays the base, and the site stays uncluttered. Right now the goal is growing the user base,
+not making money. PuckPulse is also my main portfolio piece for applied-AI engineering jobs, so AI work that
+teaches me something counts double.
 
-**Rules for every item:** free tiers only (no paid AI APIs), no "locks" in any betting copy,
-keep 21+ and 1-800-GAMBLER, and release only when no games are live.
+**Rules for every item:**
+- free tiers only (no paid AI APIs)
+- no "locks" in any betting copy
+- keep 21+ and 1-800-GAMBLER
+- release only when no games are live
 
-## How to read an item
+Architecture and setup are in [README.md](README.md).
 
-- **Status:** `next` (do soon) · `planned` (after that) · `idea` (worth doing, not scheduled) ·
-  `parked` (not now, reason given) · `waiting` (needs a date or someone else)
-- **Size:** `S` (one sitting) · `M` (a few sessions) · `L` (a week or more)
-- **Area:** `ai` · `betting` · `model` · `fan` · `growth` · `infra`
-- **Why:** what it gets me
-- **Done when:** how I'll know it's finished
+## Current state
 
----
+- Live at puckpulse.io. The repo moved to `atelier-ai-labs/puckpulse` on 2026-11-17.
+- Working today: scores, standings (sortable by any column on desktop), goal alerts, pick'em, the Bets tab
+  with fair odds (30% model / 70% market), My bets graded with closing-line value, Value of the night, Swing
+  of the night, pregame briefs, the data-check investigator, post drafts, and the AI assistant with streaming
+  answers, Langfuse tracing and an LLM judge in its evals.
+- Recently shipped: canonical URLs for Google (11-15), retrying a failed nightly step right away (11-13), and
+  totals scaled to this season's scoring plus each season's team on player pages (11-12).
+- Limits: the model hasn't beaten the market yet (246 graded games on 2026-11-17, about 47 a week). Totals are
+  still close to a league-average guess. Neon compute hit 80% of the free 100 hours in October.
+- Next major objective: the AI-engineering items under "Next" (tool input validation, a cost for every
+  question), plus smart alerts for retention.
 
-## Next
+## Roadmap
 
-### Pydantic models for the AI's tool inputs
-- **Status:** next · **Size:** S · **Area:** ai
-- **Why:** right now a bad tool call from the model can fail in confusing ways. With a strict
-  input schema for each tool, bad calls get rejected with an error the model can read and fix
-  on its own. This is one of the top things applied-AI job postings ask for.
-- **Done when:** every tool in `intelligence/app/tools.py` validates its input with a Pydantic
-  model, a bad call returns a clear error to the model, and the evals still pass.
+### Next
 
-### A token budget and a cost for every question
-- **Status:** next · **Size:** M · **Area:** ai
-- **Why:** I want to be able to say what one question costs in tokens and time, and to cap
-  runaway questions. "Reliability, latency and cost" comes up in every AI engineering interview.
-- **Done when:** each answer records its tokens and time in Langfuse, a question that goes over
-  budget stops cleanly, and I can see the average cost per question.
+#### PP-001 — Pydantic models for the AI's tool inputs
 
-### Closing-line value in My bets
-- **Status:** next · **Size:** M · **Area:** betting
-- **Why:** the best sign a bet was smart is beating the closing line, even when it loses. My bets
-  already grades wins and losses; adding "did you beat the close?" makes it a real bet journal.
-- **Done when:** each tracked bet shows the closing price and whether it beat it, with a running
-  total at the top.
+- **Status:** planned
+- **Priority:** P1
+- **Size:** S · **Area:** ai
+- **Goal:** Every assistant tool validates its input with a strict schema, so a bad call from the model gets a
+  clear error it can read and fix.
 
-### Smart alerts
-- **Status:** next · **Size:** M · **Area:** growth
-- **Why:** goal alerts are what bring people back. A few alerts that matter ("your team's
-  playoff odds jumped 15%", "tonight's starter just changed") could do more for retention than
-  any new page.
-- **Done when:** at least one new alert type ships behind the existing alert settings, opt-in,
-  and doesn't add noise.
+**Why it matters:** Today a bad tool call can fail in confusing ways. This is also one of the top things
+applied-AI job postings ask for.
 
-## Planned
+**Requirements:**
+- One Pydantic model per tool in `intelligence/app/tools.py`.
+- A failed validation goes back to the model as a readable error instead of an exception.
 
-### LangGraph experiment
-- **Status:** planned · **Size:** M · **Area:** ai
-- **Why:** rebuild the assistant's tool loop in LangGraph on a side branch and compare it with
-  my hand-written loop. Learning only, so production stays as it is. The goal is an honest
-  interview answer: "I've built agents with and without a framework, and here's when I'd pick
-  each."
-- **Done when:** both versions answer the same eval cases, and a learning-log entry compares
-  them.
+**Done when:**
+- Every tool in `intelligence/app/tools.py` validates its input with a Pydantic model.
+- A bad call returns a clear error to the model.
+- The evals still pass.
 
-### Post agent: stop always picking "Swing"
-- **Status:** planned · **Size:** S · **Area:** ai
-- **Why:** the post drafting agent almost always picks the swing-of-the-night story. An eval for
-  variety, plus a nudge in its instructions, should make the drafts more interesting.
-- **Done when:** an eval measures how varied the picks are, and over two weeks the picks aren't
-  all the same kind of story.
+**Out of scope:** Changing what the tools do or which tools exist.
 
-### Revisit the 30% model / 70% market split
-- **Status:** waiting (until the report card has 500+ graded games: 246 on 2026-11-17 at about
-  47 a week, so around late December) ·
-  **Size:** S · **Area:** model
-- **Why:** the fair odds lean on the market because the model hasn't beaten it yet. Once there
-  are enough games to know, the split should follow the evidence, either way.
-- **Done when:** the report card numbers are checked and the split is kept or changed, with the
-  reason written down.
+#### PP-002 — A token budget and a cost for every question
 
-### Sort standings on phones
-- **Status:** planned · **Size:** S · **Area:** fan
-- **Why:** on desktop you can sort standings by any column. Phones show cards with no headers, so
-  sorting doesn't work there. A small "Sort by" menu would fix that.
-- **Done when:** phones can sort standings by the same stats as desktop.
+- **Status:** planned
+- **Priority:** P1
+- **Size:** M · **Area:** ai
+- **Goal:** Know what one question costs in tokens and time, and stop runaway questions cleanly.
 
-### Trade simulator v2
-- **Status:** planned · **Size:** M · **Area:** model
-- **Why:** the "what if" simulator handles skaters, but not goalies or a player missing part of
-  the season ("out a month"). Both come up all the time in real trade and injury talk.
-- **Done when:** you can trade a goalie and set a player out for N games, and the playoff odds
-  respond sensibly.
+**Why it matters:** "Reliability, latency and cost" comes up in every AI engineering interview, and a cap
+protects the free tiers.
 
-### Playoff series odds
-- **Status:** waiting (start in March, before the playoffs) · **Size:** L · **Area:** model
-- **Why:** once the playoffs start, the regular-season pages matter less. Series odds and a
-  bracket would keep PuckPulse useful into June.
-- **Done when:** each series shows win chances by game count, and the bracket updates after
-  every game.
+**Done when:**
+- Each answer records its tokens and time in Langfuse.
+- A question that goes over budget stops cleanly.
+- The average cost per question is visible.
 
-## Ideas
+**Out of scope:** Paid models or paid tiers.
 
-### xG rink bias correction
-- **Status:** idea · **Size:** M · **Area:** model
-- **Why:** some arenas' scorekeepers record shots a bit differently, which skews xG. Correcting
-  for it is the standard next step for an xG model.
+#### PP-003 — Closing-line value in My bets
 
-### Win chances on the scoreboard cards
-- **Status:** idea · **Size:** S · **Area:** fan
-- **Why:** a small number on each card would save a tap. It has to stay subtle, so the
-  scoreboard stays clean.
+- **Status:** done
+- **Priority:** P1
+- **Size:** M · **Area:** betting
+- **Goal:** Each tracked bet shows the closing price and whether it beat it, with a running total.
 
-### "Why did the odds change?"
-- **Status:** idea · **Size:** M · **Area:** betting
-- **Why:** when a team's odds move, say why: a goalie change, an injury, a back-to-back, or the
-  market moving.
+**Why it matters:** Beating the closing line is the best sign a bet was smart, even when it loses. It turns My
+bets into a real bet journal.
 
-### Pre-rendered pages for search engines
-- **Status:** idea · **Size:** L · **Area:** growth
-- **Why:** every page starts as the same blank shell until JavaScript runs. Real HTML for each
-  page would help Google, and maybe search traffic.
+**Done when:**
+- Each tracked bet shows the closing price and whether it beat it, with a running total at the top.
 
-### Player impact from NHL EDGE tracking data
-- **Status:** idea · **Size:** L · **Area:** model
-- **Why:** skating speed and zone time could add something that box-score stats miss. It's a big
-  research project.
+**References:** b36788b (2026-10-29), `frontend/src/pages/MyBetsPage.jsx`
 
-## Parked
+#### PP-004 — Smart alerts
 
-- **Player props:** a natural fit for betting research, but the free Odds API tier can't cover
-  the calls.
-- **Better totals:** totals are still about a league-average guess. The obvious ideas (starting
-  goalies, team goaltending) tested null, so this waits for a genuinely new idea.
-- **Social posts in the news feed (X/Bluesky):** no good free source.
-- **Making money (ads, PuckPulse+):** not until traffic is steady and people clearly use the AI
-  features.
-- **A second sport:** if it ever happens, MLB fills the NHL off-season.
+- **Status:** planned
+- **Priority:** P1
+- **Size:** M · **Area:** growth
+- **Goal:** Ship at least one new alert type that matters, such as "your team's playoff odds jumped 15%" or
+  "tonight's starter just changed".
+
+**Why it matters:** Goal alerts are what bring people back. A few alerts that matter could do more for
+retention than any new page.
+
+**Requirements:**
+- Lives behind the existing alert settings, and is opt-in.
+
+**Done when:**
+- At least one new alert type ships behind the existing alert settings, opt-in.
+- It doesn't add noise.
+
+### Planned
+
+#### PP-005 — LangGraph experiment
+
+- **Status:** planned
+- **Priority:** P2
+- **Size:** M · **Area:** ai
+- **Goal:** Rebuild the assistant's tool loop in LangGraph on a side branch and compare it with the
+  hand-written loop.
+
+**Why it matters:** An honest interview answer: "I've built agents with and without a framework, and here's
+when I'd pick each."
+
+**Done when:**
+- Both versions answer the same eval cases.
+- A learning-log entry compares them.
+
+**Out of scope:** Changing production. This is learning only.
+
+#### PP-006 — Post agent: stop always picking "Swing"
+
+- **Status:** planned
+- **Priority:** P2
+- **Size:** S · **Area:** ai
+- **Goal:** The post drafting agent picks a wider variety of stories instead of almost always the swing of the
+  night.
+
+**Why it matters:** More varied drafts are more interesting to post.
+
+**Requirements:**
+- An eval for variety, plus a nudge in the agent's instructions.
+
+**Done when:**
+- An eval measures how varied the picks are.
+- Over two weeks the picks aren't all the same kind of story.
+
+#### PP-007 — Revisit the 30% model / 70% market split
+
+- **Status:** blocked
+- **Priority:** P2
+- **Size:** S · **Area:** model
+- **Goal:** Make the fair-odds split follow the evidence once there are enough graded games.
+
+**Why it matters:** The fair odds lean on the market because the model hasn't beaten it yet. The split should
+follow the evidence, either way.
+
+**Done when:**
+- The report card numbers are checked, and the split is kept or changed with the reason written down.
+
+**Depends on:** 500+ graded games on the report card (246 on 2026-11-17 at about 47 a week, so around late
+December).
+
+#### PP-008 — Sort standings on phones
+
+- **Status:** planned
+- **Priority:** P2
+- **Size:** S · **Area:** fan
+- **Goal:** Phones can sort the standings with a small "Sort by" menu.
+
+**Why it matters:** Desktop can sort by any column, but phones show cards with no headers, so sorting doesn't
+work there.
+
+**Done when:**
+- Phones can sort standings by the same stats as desktop.
+
+**References:** 4fb0b55 (desktop sorting)
+
+#### PP-009 — Trade simulator v2
+
+- **Status:** planned
+- **Priority:** P2
+- **Size:** M · **Area:** model
+- **Goal:** The "what if" simulator handles goalies and a player missing part of the season.
+
+**Why it matters:** Both come up all the time in real trade and injury talk.
+
+**Done when:**
+- You can trade a goalie and set a player out for N games.
+- The playoff odds respond sensibly.
+
+#### PP-010 — Playoff series odds
+
+- **Status:** blocked
+- **Priority:** P3
+- **Size:** L · **Area:** model
+- **Goal:** Each playoff series shows win chances by game count, with a bracket that updates after every game.
+
+**Why it matters:** Once the playoffs start, the regular-season pages matter less. This keeps PuckPulse useful
+into June.
+
+**Done when:**
+- Each series shows win chances by game count.
+- The bracket updates after every game.
+
+**Depends on:** The calendar: start in March 2027, before the playoffs.
+
+## Future ideas
+
+- xG rink bias correction: some arenas record shots differently, which skews xG.
+- Win chances on the scoreboard cards, kept subtle so the scoreboard stays clean.
+- "Why did the odds change?": say whether it was a goalie change, an injury, a back-to-back or the market.
+- Pre-rendered pages for search engines, so Google sees real HTML instead of a blank shell.
+- Player impact from NHL EDGE tracking data (skating speed, zone time). A big research project.
+- Parked: player props. The free Odds API tier can't cover the calls.
+- Parked: better totals. Starting goalies and team goaltending tested null; waits for a genuinely new idea.
+- Parked: social posts (X/Bluesky) in the news feed. No good free source.
+- Parked: making money (ads, PuckPulse+). Not until traffic is steady and people clearly use the AI features.
+- Parked: a second sport. If it ever happens, MLB fills the NHL off-season.
 
 ## Dated checks
+
+Not roadmap work; reminders kept here so they aren't lost.
 
 | When | Check |
 |---|---|
@@ -151,12 +228,3 @@ keep 21+ and 1-800-GAMBLER, and release only when no games are live.
 | ~2026-11-30 | Google Search Console: did the "Duplicate without user-selected canonical" fix pass validation? |
 | Early each month | Neon: compute hours used vs. the free 100 (it hit 80% in October) |
 | Anytime | Delete the old, unused images under `ghcr.io/nmagera07/` (optional cleanup) |
-
-## Done recently
-
-- **2026-11-17:** moved the repo to `atelier-ai-labs/puckpulse`, and rewrote the README.
-- **2026-11-15:** canonical URLs for Google.
-- **2026-11-13:** retry a failed nightly step right away.
-- **2026-11-12:** totals scaled to this season's scoring; each season's team on player pages.
-- **2026-11-08 and earlier:** Langfuse tracing, an LLM judge in the evals, streaming AI answers,
-  pregame briefs, the data-check investigator, post drafts, My bets, Value of the night.
