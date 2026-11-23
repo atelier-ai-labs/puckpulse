@@ -58,6 +58,49 @@ function sortRows(rows, sortBy, sortDir, playoffOddsByTeam) {
   });
 }
 
+// Phones have no column headers, so they sort from this menu. It offers the
+// same stats as the desktop headers, in both views.
+const MOBILE_SORT_OPTIONS = [
+  { key: "points", label: "PTS" },
+  { key: "games_played", label: "GP" },
+  { key: "wins", label: "W" },
+  { key: "losses", label: "L" },
+  { key: "ot_losses", label: "OT" },
+  { key: "goal_for", label: "GF" },
+  { key: "goal_against", label: "GA" },
+  { key: "goal_differential", label: "DIFF" },
+  { key: "playoff_odds", label: "PO%" },
+  ...ADVANCED_SORT_COLUMNS,
+];
+
+function MobileSortMenu({ sortBy, sortDir, onSort, onClearSort }) {
+  return (
+    <div className="standings-sort-menu">
+      <label htmlFor="standings-sort-by">Sort by</label>
+      <select
+        id="standings-sort-by"
+        value={sortBy ?? ""}
+        onChange={(e) => (e.target.value ? onSort(e.target.value) : onClearSort())}
+      >
+        <option value="">Standings order</option>
+        {MOBILE_SORT_OPTIONS.map((o) => (
+          <option key={o.key} value={o.key}>{o.label}</option>
+        ))}
+      </select>
+      {sortBy && (
+        <button
+          type="button"
+          className="standings-sort-dir"
+          aria-label={sortDir === "asc" ? "Ascending, switch to descending" : "Descending, switch to ascending"}
+          onClick={() => onSort(sortBy)}
+        >
+          {sortDir === "asc" ? "▲" : "▼"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function SortHeader({ sortKey, sortBy, sortDir, onSort, className = "", children }) {
   const active = sortKey === sortBy;
   return (
@@ -86,7 +129,7 @@ function TeamCell({ row, following }) {
 
 // cutoff: mark where the division's guaranteed playoff spots end (a
 // division tab, not searching): the top 3 are in, the rest race for the wild cards.
-function StandingsTable({ rows, onSelectTeam, playoffOddsByTeam, sortBy, sortDir, onSort, view = "standard", rankBy = "division_sequence", cutoff = false }) {
+function StandingsTable({ rows, onSelectTeam, playoffOddsByTeam, sortBy, sortDir, onSort, onClearSort, view = "standard", rankBy = "division_sequence", cutoff = false }) {
   const [following] = useFollowedTeams();
   // Copy before sorting so this never mutates the rows prop in place.
   const displayRows = sortBy ? sortRows(rows, sortBy, sortDir, playoffOddsByTeam) : [...rows].sort((a, b) => a[rankBy] - b[rankBy]);
@@ -172,6 +215,7 @@ function StandingsTable({ rows, onSelectTeam, playoffOddsByTeam, sortBy, sortDir
         </tbody>
       </table>
     </div>
+    <MobileSortMenu sortBy={sortBy} sortDir={sortDir} onSort={onSort} onClearSort={onClearSort} />
     <div className="standings-mobile-list" aria-label="Team standings">
       {displayRows.length === 0 && <div className="standings-mobile-empty">No teams match your search.</div>}
       {displayRows.map((row, i) => {

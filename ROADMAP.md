@@ -163,7 +163,7 @@ December).
 
 #### PP-008 — Sort standings on phones
 
-- **Status:** planned
+- **Status:** done
 - **Priority:** P2
 - **Size:** S · **Area:** fan
 - **Goal:** Phones can sort the standings with a small "Sort by" menu.
