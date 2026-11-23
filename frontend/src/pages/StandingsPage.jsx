@@ -27,6 +27,7 @@ function StandingsPage({
   sortBy,
   sortDir,
   onSort,
+  onClearSort,
 }) {
   return (
     <main>
@@ -65,6 +66,7 @@ function StandingsPage({
         sortBy={sortBy}
         sortDir={sortDir}
         onSort={onSort}
+        onClearSort={onClearSort}
       />
       <p className="data-credit">
         {view === "advanced"

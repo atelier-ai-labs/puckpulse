@@ -212,4 +212,28 @@ describe("StandingsTable", () => {
       expect(cardList().getByText("No teams match your search.")).toBeInTheDocument();
     });
   });
+
+  describe("phone sort menu", () => {
+    const menuRows = [
+      team({ team_abbrev: "AAA", team_name: "Alpha", division_sequence: 1, points: 90 }),
+      team({ team_abbrev: "BBB", team_name: "Bravo", division_sequence: 2, points: 100 }),
+    ];
+
+    it("sorts by the chosen stat, including advanced ones", async () => {
+      const onSort = vi.fn();
+      render(<StandingsTable rows={menuRows} onSelectTeam={vi.fn()} sortBy={null} sortDir="desc" onSort={onSort} onClearSort={vi.fn()} />);
+      await userEvent.selectOptions(screen.getByLabelText("Sort by"), "xgoals_for_pct");
+      expect(onSort).toHaveBeenCalledWith("xgoals_for_pct");
+    });
+
+    it("toggles direction and clears the sort", async () => {
+      const onSort = vi.fn();
+      const onClearSort = vi.fn();
+      render(<StandingsTable rows={menuRows} onSelectTeam={vi.fn()} sortBy="points" sortDir="desc" onSort={onSort} onClearSort={onClearSort} />);
+      await userEvent.click(screen.getByRole("button", { name: /Descending/ }));
+      expect(onSort).toHaveBeenCalledWith("points");
+      await userEvent.selectOptions(screen.getByLabelText("Sort by"), "");
+      expect(onClearSort).toHaveBeenCalled();
+    });
+  });
 });

@@ -68,6 +68,8 @@
   .leaderboard-row-headline strong { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1; }
   .leaderboard-mobile-empty { padding: 24px 14px; color: var(--text-dim); text-align: center; }
   .standings-table-card { display: none; }
+  .standings-sort-menu { display: flex; align-items: center; gap: 8px; margin: 0 var(--gutter) 10px; color: var(--text-dim); font-size: 13px; }
+  .standings-sort-menu select, .standings-sort-dir { min-height: 36px; padding: 0 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); font: inherit; }
   .standings-mobile-list { display: grid; margin: 0 var(--gutter); border: 1px solid var(--border); border-radius: 18px; background: var(--card); overflow: hidden; }
   .standings-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 64px; padding: 10px 14px; border: 0; border-top: 1px solid var(--border); background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
   .standings-row:first-child { border-top: 0; }
