@@ -96,8 +96,8 @@ bets into a real bet journal.
 - **Status:** planned
 - **Priority:** P1
 - **Size:** M · **Area:** growth
-- **Goal:** Ship at least one new alert type that matters, such as "your team's playoff odds jumped 15%" or
-  "tonight's starter just changed".
+- **Goal:** Ship at least one new alert type that matters, such as "your team's playoff odds jumped 15%",
+  "tonight's starter just changed", or breaking news like a big trade or signing.
 
 **Why it matters:** Goal alerts are what bring people back. A few alerts that matter could do more for
 retention than any new page.
@@ -106,7 +106,7 @@ retention than any new page.
 - Lives behind the existing alert settings, and is opt-in.
 
 **Done when:**
-- At least one new alert type ships behind the existing alert settings, opt-in.
+- At least one new alert type (such as breaking news) ships behind the existing alert settings, opt-in.
 - It doesn't add noise.
 
 ### Planned
