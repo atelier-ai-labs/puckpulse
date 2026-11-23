@@ -121,3 +121,6 @@
 .playoff-out { background: var(--neutral-soft); color: var(--text-dim); }
 
 .division-tab-short { display: none; }
+
+/* Phones only (shown in mobile.css): the desktop table sorts from its headers. */
+.standings-sort-menu { display: none; }

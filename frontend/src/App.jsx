@@ -228,6 +228,7 @@ export default function NHLDashboard() {
                 sortBy={standingsSortBy}
                 sortDir={standingsSortDir}
                 onSort={handleStandingsSort}
+                onClearSort={() => setStandingsSortBy(null)}
               />
             )}
           />
