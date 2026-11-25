@@ -1,6 +1,6 @@
 # PuckPulse roadmap
 
-**Last reviewed:** 2026-11-20. This file follows the Atelier AI Labs roadmap standard (v1.0). Atelier HQ reads
+**Last reviewed:** 2026-11-24. This file follows the Atelier AI Labs roadmap standard (v1.0). Atelier HQ reads
 it to suggest what to work on, so every item uses the same fields.
 
 ## Vision
@@ -108,6 +108,42 @@ retention than any new page.
 **Done when:**
 - At least one new alert type (such as breaking news) ships behind the existing alert settings, opt-in.
 - It doesn't add noise.
+
+#### PP-011 — Tonight's games, and a fair test of who it's for
+
+- **Status:** planned
+- **Priority:** P1
+- **Size:** M · **Area:** growth
+- **Goal:** Give PuckPulse one clear job: the site for tonight's hockey decision, whether that's a bet, a
+  fantasy lineup or a pick'em pick. One "Tonight" page brings each game's facts together, built on the pregame
+  briefs. Then a two-week test shows which audience actually comes back: bettors or fantasy players.
+
+**Why it matters:** Today PuckPulse has a lot of features but no single reason to visit: ESPN and NHL.com already
+cover general info. Bettors, fantasy players and pick'em players all ask the same question on game day ("what
+do I do about tonight?") and need the same facts. A fair test lets users pick the audience, instead of a guess.
+
+**Requirements:**
+- A Tonight page: per game, the confirmed or likely goalies, injuries, back-to-backs and travel, recent form
+  beyond the record, and the odds and how they've moved. Scannable in about a minute per game.
+- Tapping a game on the scoreboard opens its part of Tonight. The scoreboard stays on top, and the home page
+  stays uncluttered.
+- Two framings of the same page, the same data and the same layout: "before you bet" and "before you set your
+  lineup". Only the wording changes.
+- Each framing gets its own tagged link, so Umami can tell the two groups apart, plus Umami events for opening a
+  game and coming back on a later game day.
+- The winning rule is written down before anything is posted: a framing wins if at least 20% of the visitors it
+  sends come back on another game day within the two weeks, and beats the other by a clear margin. Compare
+  return rates, never raw traffic.
+- Both are posted on the same days, in communities of a similar size, with the same kind of post.
+- Research, not advice: no picks or "locks", and the 21+ and 1-800-GAMBLER notes stay on the betting framing.
+
+**Done when:**
+- The Tonight page is live and every game on the scoreboard opens its section.
+- Both framings have run for two weeks, and the return rate of each group is reported as "x of n".
+- The result is written up here: which audience won, or that neither did, and what PuckPulse focuses on next.
+
+**Out of scope:** Paid ads or promotion. New data sources that cost money. Redesigning the home page. Choosing
+the audience before the test ends.
 
 ### Planned
 
