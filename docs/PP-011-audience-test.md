@@ -45,12 +45,11 @@ arrives on day 13 has until day 27, and reading the result at day 14 would miss 
   days of their first visit. Compare return rates, never raw traffic.
 - **A framing wins if both:**
   1. its return rate is **at least 20%**, and
-  2. it beats the other group's rate by a **clear margin**: at least **10 percentage points** higher. *(The
-     roadmap item says "a clear margin" without a number; 10 points is this PR's proposal and must be
-     confirmed or changed here before the first post.)*
+  2. it beats the other group's rate by at least **10 percentage points**.
 - If neither framing meets both conditions, **neither won**. That's a result too: write it up as such.
-- A group with fewer than 30 visitors (n < 30) can't win: too few to tell. Report it anyway. *(Also this PR's
-  proposal, to confirm or drop before the first post.)*
+- A group with fewer than 30 visitors (n < 30) can't win: too few to tell. Report it anyway.
+
+Confirmed by the owner on 2026-11-25, before anything was posted.
 
 ## How it's posted (the fair part)
 
