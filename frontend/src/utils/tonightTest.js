@@ -8,8 +8,8 @@
 // Umami events, each sent at most once per browser, so event counts are
 // visitor counts:
 //   tonight-arrive {framing}: joined a group (n),
-//   tonight-return {framing, days}: came back on a later game day within
-//     the test window (x).
+//   tonight-return {framing, days, joined}: came back on a later game day
+//     within 14 days of joining on `joined` (x).
 // tonight-game-open {framing, game, from} counts games opened on the page.
 import { track } from "./analytics.js";
 import { shiftDate } from "./dates.js";
@@ -70,7 +70,7 @@ export function recordReturnCheck(today, isGameDay) {
   const { days, ...saved } = due;
   if (isGameDay) {
     write({ ...saved, checked: today, returned: today });
-    track("tonight-return", { framing: saved.framing, days });
+    track("tonight-return", { framing: saved.framing, days, joined: saved.day });
   } else {
     write({ ...saved, checked: today });
   }

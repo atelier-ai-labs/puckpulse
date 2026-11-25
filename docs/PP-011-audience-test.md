@@ -28,17 +28,21 @@ tagged link see neutral wording ("Tonight") and aren't counted. Both framings ke
 Each event is sent at most once per browser, so an event count is a visitor count.
 
 - `tonight-arrive` `{framing}`: a browser joined a group. This is **n**.
-- `tonight-return` `{framing, days}`: a browser in a group opened PuckPulse (any page) on a **later game day**
+- `tonight-return` `{framing, days, joined}`: a browser in a group opened PuckPulse (any page) on a **later game day**
   (a day with at least one NHL game), within 14 days of joining. This is **x**.
 - `tonight-game-open` `{framing, game, from}`: a game's section opened, from the scoreboard, a link, or a tap on
   the page. Counted for context only; it doesn't decide the result.
 
-To read it: Umami, Events, filter each event by its `framing` property, and take the counts for the two weeks.
+To read it: Umami, Events, filter each event by its `framing` property. Count `tonight-arrive` over the two
+posting weeks only, and `tonight-return` from the first post until **14 days after the last post**,
+keeping only returns whose `joined` date falls in the posting weeks (so n and x are the same visitors).
+Every visitor gets the same 14 days to come back, so the result can't be read before then. A visitor who
+arrives on day 13 has until day 27, and reading the result at day 14 would miss most of those returns.
 
 ## The rule (decided now)
 
-- **Return rate** for a group is x of n: the visitors it sent who came back on another game day within the
-  two weeks. Compare return rates, never raw traffic.
+- **Return rate** for a group is x of n: the visitors it sent who came back on another game day within 14
+  days of their first visit. Compare return rates, never raw traffic.
 - **A framing wins if both:**
   1. its return rate is **at least 20%**, and
   2. it beats the other group's rate by a **clear margin**: at least **10 percentage points** higher. *(The
@@ -65,7 +69,8 @@ To read it: Umami, Events, filter each event by its `framing` property, and take
 
 ## Result
 
-*(Filled in after the two weeks. Report each group as "x of n".)*
+*(Filled in 14 days after the last post, once every visitor has had their full 14 days. Report each group as
+"x of n".)*
 
 - `bet`: x of n returned (rate)
 - `lineup`: x of n returned (rate)

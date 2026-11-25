@@ -27,7 +27,7 @@ describe("the PP-011 audience test", () => {
     framingFor("bet", "2026-11-25");
     expect(returnToCheck("2026-11-25")).toBeNull(); // the same day isn't a return
     recordReturnCheck("2026-11-27", true);
-    expect(globalThis.umami.track).toHaveBeenCalledWith("tonight-return", { framing: "bet", days: 2 });
+    expect(globalThis.umami.track).toHaveBeenCalledWith("tonight-return", { framing: "bet", days: 2, joined: "2026-11-25" });
     recordReturnCheck("2026-11-28", true);
     expect(globalThis.umami.track.mock.calls.filter(([name]) => name === "tonight-return")).toHaveLength(1);
   });
