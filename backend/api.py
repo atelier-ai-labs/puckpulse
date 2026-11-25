@@ -69,6 +69,7 @@ import push
 from daily_cache import cache as daily_cache, daily_cached
 import goal_model
 import season_scenarios
+import tonight
 import win_probability
 from seasons import season_games
 from response_models.feedback import FeedbackIn
@@ -1924,6 +1925,78 @@ def bets_for_day(day: date = Query(..., alias="date")):
         raise
     finally:
         conn.close()
+
+
+@app.get("/tonight")
+@daily_cached
+def tonight_for_day(day: date = Query(..., alias="date")):
+    """
+    The Tonight page (tonight.py): for each game on a date, the Bets board's
+    goalies, back-to-backs and odds (bets_for_day), plus how the odds moved
+    since the morning, each team's recent form and travel, its injuries
+    (ESPN), and the pregame brief. {"date", "games": {game_id: {...}}}.
+    Research only: no picks.
+    """
+    board = bets_for_day(day=day)["games"]
+    if not board:
+        return {"date": str(day), "games": {}}
+    teams = sorted({g[side] for g in board.values() for side in ("home", "away")})
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            try:
+                cur.execute(
+                    """
+                    SELECT game_id, captured, home_prob, home_line, away_line, books, captured_at
+                    FROM market_odds WHERE game_date = %s AND source = 'sportsbooks'
+                    """,
+                    (day,),
+                )
+                snapshots = cur.fetchall()
+            except (psycopg2.errors.UndefinedTable, psycopg2.errors.UndefinedColumn):
+                conn.rollback()
+                snapshots = []
+            cur.execute(
+                """
+                SELECT t.team_abbrev, t.game_date, t.is_home, t.xg_for, t.xg_against, t.goals_for, t.goals_against,
+                       o.team_abbrev AS opponent
+                FROM team_game_xg t
+                JOIN team_game_xg o ON o.game_id = t.game_id AND o.team_abbrev <> t.team_abbrev
+                WHERE t.team_abbrev = ANY(%s) AND t.game_date < %s AND t.game_date >= %s AND t.game_type IN (2, 3)
+                ORDER BY t.team_abbrev, t.game_date DESC
+                """,
+                (teams, day, day - timedelta(days=60)),
+            )
+            history = {}
+            for r in cur.fetchall():
+                history.setdefault(r["team_abbrev"], []).append(r)
+            try:
+                cur.execute("SELECT game_id, text FROM game_briefs WHERE game_date = %s", (day,))
+                briefs = {str(r["game_id"]): r["text"] for r in cur.fetchall()}
+            except psycopg2.errors.UndefinedTable:
+                conn.rollback()
+                briefs = {}
+    except Exception:
+        logger.error(f"Failed to build Tonight for {day}", exc_info=True)
+        raise
+    finally:
+        conn.close()
+    by_game = {}
+    for s in snapshots:
+        by_game.setdefault(str(s["game_id"]), {})[s["captured"]] = dict(s)
+    injured = (news.injuries() or {}).get("teams", {})
+    games = {}
+    for game_id, g in board.items():
+        snaps = by_game.get(game_id, {})
+        games[game_id] = {
+            **g,
+            "odds_move": tonight.odds_move(snaps.get("morning"), snaps.get("close")),
+            "form": {side: tonight.recent_form(history.get(g[side], [])) for side in ("home", "away")},
+            "travel": {side: tonight.travel(g[side], history.get(g[side], []), day, g["home"]) for side in ("home", "away")},
+            "injuries": {side: injured.get(g[side], []) for side in ("home", "away")},
+            "brief": briefs.get(game_id),
+        }
+    return {"date": str(day), "games": games}
 
 
 @app.get("/value-of-the-night")
