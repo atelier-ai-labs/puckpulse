@@ -132,8 +132,8 @@ do I do about tonight?") and need the same facts. A fair test lets users pick th
 - Each framing gets its own tagged link, so Umami can tell the two groups apart, plus Umami events for opening a
   game and coming back on a later game day.
 - The winning rule is written down before anything is posted: a framing wins if at least 20% of the visitors it
-  sends come back on another game day within the two weeks, and beats the other by a clear margin. Compare
-  return rates, never raw traffic.
+  sends come back on another game day within 14 days, beats the other by at least 10 percentage points, and
+  has at least 30 visitors. Compare return rates, never raw traffic.
 - Both are posted on the same days, in communities of a similar size, with the same kind of post.
 - Research, not advice: no picks or "locks", and the 21+ and 1-800-GAMBLER notes stay on the betting framing.
 
