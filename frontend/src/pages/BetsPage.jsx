@@ -4,6 +4,7 @@ import { useFetchWithStatus } from "../hooks/useFetchWithStatus.js";
 import { useMyBets } from "../hooks/useMyBets.js";
 import ValueOfTheNight from "../components/ValueOfTheNight.jsx";
 import { betId, sideLine } from "../utils/myBets.js";
+import { starter } from "../utils/goalies.js";
 import { todayISO } from "../utils/dates.js";
 import { formatEv, formatPct, formatPrice, formatSpread } from "../utils/odds.js";
 
@@ -34,20 +35,6 @@ function Side({ label, side, showBook, open, tracked, onTrack }) {
       ) : body}
     </div>
   );
-}
-
-const lastName = (name) => name.split(" ").slice(1).join(" ") || name;
-
-// A team's starter by the best word so far: a beat reporter's (via
-// RotoWire: "confirmed" or "expected"), then NHL.com's projected lineup,
-// then our projection with its chance. {name, note} or null.
-function starter(board, side) {
-  const reported = board.reported_starters?.[side];
-  if (reported) return { name: lastName(reported.name), note: reported.status };
-  const nhl = board.nhl_starters?.[side];
-  if (nhl) return { name: lastName(nhl), note: "NHL.com" };
-  const top = board.goalies?.[side]?.[0];
-  return top ? { name: lastName(top.name), note: formatPct(top.prob) } : null;
 }
 
 function Starter({ goalie }) {

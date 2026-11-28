@@ -29,6 +29,7 @@ export const PAGES = [
   { path: "/compare", title: "Compare players", index: false }, // an empty picker isn't worth indexing
   { path: "/time-machine", title: "Time machine", index: false },
   { path: "/bets", title: "Bets", index: false }, // kept out of the sitemap: launch leads with non-betting pages
+  { path: "/tonight", title: "Tonight's games", index: false }, // the audience test's landing page (PP-011)
   { path: "/my-bets", title: "My Bets", index: false },
 ];
 

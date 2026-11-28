@@ -128,7 +128,13 @@ export default function Scoreboard({ date = null, pinTeams = [] }) {
   const { data: inputs } = useFetchWithStatus(anyUpcoming ? `${API_BASE}/season-sim` : null);
 
   // Remember which day we came from, so the box score's back link returns there.
-  const openGame = (id) => navigate(`/games/${id}`, { state: { from: `${location.pathname}${location.search}` } });
+  // Tonight's games that haven't started open their section of Tonight (PP-011):
+  // the facts for tonight's decision, with a link on to the full preview.
+  const openGame = (game) => {
+    const from = `${location.pathname}${location.search}`;
+    if (!date && phase(game) === "upcoming") navigate(`/tonight#game-${game.id}`, { state: { from, via: "scoreboard" } });
+    else navigate(`/games/${game.id}`, { state: { from } });
+  };
 
   return (
     <section className="scoreboard" aria-label="Today's NHL scoreboard">
@@ -139,7 +145,7 @@ export default function Scoreboard({ date = null, pinTeams = [] }) {
       )}
       <div className="scoreboard-games">
         {orderGames(games, pinTeams).map((game) => (
-          <GameCard key={game.id} game={game} onOpen={() => openGame(game.id)} mine={pinRank(game, pinTeams) >= 0} inputs={inputs} />
+          <GameCard key={game.id} game={game} onOpen={() => openGame(game)} mine={pinRank(game, pinTeams) >= 0} inputs={inputs} />
         ))}
       </div>
     </section>

@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import Scoreboard from "./Scoreboard.jsx";
 import { sortGames, statusLabel } from "./gameStatus.js";
 import { rememberResponse } from "../utils/responseCache.js";
@@ -183,5 +184,37 @@ describe("Scoreboard with a favorite team", () => {
     expect(cards[2]).toHaveAccessibleName(/MTL at TOR/);
     expect(cards[1]).toHaveClass("game-card-mine");
     expect(cards[2]).not.toHaveClass("game-card-mine");
+  });
+});
+
+describe("Scoreboard taps (PP-011)", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  function Where() {
+    const loc = useLocation();
+    return <p data-testid="where">{`${loc.pathname}${loc.hash}`}</p>;
+  }
+
+  async function tap(name, props = {}) {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => ({ games: [upcoming, live] }) });
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes><Route path="*" element={<><Scoreboard {...props} /><Where /></>} /></Routes>
+      </MemoryRouter>
+    );
+    await userEvent.click(await screen.findByRole("button", { name }));
+    return screen.getByTestId("where").textContent;
+  }
+
+  it("opens a game that hasn't started in its section of Tonight", async () => {
+    expect(await tap(/UTA at BOS/)).toBe("/tonight#game-1");
+  });
+
+  it("still opens a live game's box score", async () => {
+    expect(await tap(/PIT at WSH/)).toBe("/games/2");
+  });
+
+  it("opens the game page for another day's games", async () => {
+    expect(await tap(/UTA at BOS/, { date: "2026-10-08" })).toBe("/games/1");
   });
 });

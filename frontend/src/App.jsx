@@ -25,6 +25,8 @@ import LeaderboardPage from "./pages/LeaderboardPage.jsx";
 import GamePage from "./pages/GamePage.jsx";
 import PickemPage from "./pages/PickemPage.jsx";
 import BetsPage from "./pages/BetsPage.jsx";
+import TonightPage from "./pages/TonightPage.jsx";
+import { useTonightReturn } from "./hooks/useTonightReturn.js";
 import MyBetsPage from "./pages/MyBetsPage.jsx";
 import ReportCardPage from "./pages/ReportCardPage.jsx";
 import DraftLotteryPage from "./pages/DraftLotteryPage.jsx";
@@ -81,6 +83,7 @@ export default function NHLDashboard() {
   const location = useLocation();
   usePageTitle();
   useScrollToTop();
+  useTonightReturn(); // PP-011's audience test: counts a return on a later game day
   // Held here, not in the header, so a switch re-renders the whole page
   // (team logos pick their version by theme as they render).
   const [theme, toggleTheme] = useTheme();
@@ -247,6 +250,7 @@ export default function NHLDashboard() {
           <Route path="/track-record" element={<TrackRecordPage />} />
           <Route path="/pickem" element={<PickemPage />} />
           <Route path="/bets" element={<BetsPage />} />
+          <Route path="/tonight" element={<TonightPage />} />
           <Route path="/my-bets" element={<MyBetsPage />} />
           <Route path="/report-card" element={<ReportCardPage />} />
           <Route path="/draft-lottery" element={<DraftLotteryPage standings={standings} />} />
