@@ -37,7 +37,7 @@ jobs:
 
       - name: Token (Verre Agent app)
         id: app
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.VERRE_AGENT_APP_ID }}
           private-key: ${{ secrets.VERRE_AGENT_APP_KEY }}

@@ -51,7 +51,7 @@ jobs:
           [[ "$AGENT" == claude || "$AGENT" == gemini ]] || { echo "::error::unknown agent"; exit 1; }
           [[ "$MODEL" =~ ^[a-z0-9.-]+$ ]] || { echo "::error::bad model name"; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.base }}
           persist-credentials: false   # the agent's checkout can't push anywhere
@@ -60,9 +60,9 @@ jobs:
       # and .verre/checks.sh runs the same tests and linters as its CI (see AGENTS.md, "Project checks").
       # Installing here, before the AI starts and with no AI involved, means the agent never needs a package
       # manager or the network to test its work. PP-011's agent couldn't install anything and worked blind.
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: "3.12" }
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 22 }
       - name: Install the project's dependencies (no AI)
         run: |
@@ -167,7 +167,7 @@ jobs:
             echo "none" > "$w/checks.status"; : > "$w/checks.log"
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: verre-work
           path: |
@@ -180,7 +180,7 @@ jobs:
 
       # Claude Code's own record of the run: every tool it tried and whether it was allowed. The step's log
       # hides it, so without this a "my commands were blocked" summary can't be checked (PP-011).
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always() && steps.claude.outputs.execution_file != ''
         with:
           name: verre-agent-transcript
@@ -208,17 +208,17 @@ jobs:
       - name: Token for the push (Verre Agent app, when set up)
         id: app
         if: ${{ vars.VERRE_AGENT_APP_ID != '' }}
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.VERRE_AGENT_APP_ID }}
           private-key: ${{ secrets.VERRE_AGENT_APP_KEY }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.base }}
           persist-credentials: false
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: verre-work
           path: ${{ runner.temp }}/verre
