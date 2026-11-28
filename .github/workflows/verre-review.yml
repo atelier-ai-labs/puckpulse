@@ -57,7 +57,7 @@ jobs:
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "base=$base" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.pr.outputs.sha }}
           fetch-depth: 0               # every branch, so the diff against the base works
@@ -73,9 +73,9 @@ jobs:
           cat "$w/changes.stat"
 
       # The same set-up the agent had, so the reviewer can run the project's checks or one test itself.
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: "3.12" }
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 22 }
       - name: Install the project's dependencies (no AI)
         run: |
@@ -148,7 +148,7 @@ jobs:
             --allowedTools "Write" "Bash(cd:*)" "Bash(ls:*)" "Bash(git diff:*)" "Bash(git log:*)" "Bash(git show:*)" "Bash(git status:*)" "Bash(bash .verre/checks.sh)" "Bash(npm test:*)" "Bash(npm run:*)" "Bash(npm --prefix:*)" "Bash(npx vitest:*)" "Bash(npx tsc:*)" "Bash(python -m pytest:*)" "Bash(pytest:*)"
             --disallowedTools "Edit" "MultiEdit" "Bash(git push:*)" "Bash(git commit:*)" "Bash(gh:*)" "Bash(curl:*)" "Bash(wget:*)"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: verre-review
@@ -156,7 +156,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always() && steps.claude.outputs.execution_file != ''
         with:
           name: verre-review-transcript
@@ -179,7 +179,7 @@ jobs:
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         continue-on-error: true   # missing when the reviewer couldn't finish
         with:
           name: verre-review
